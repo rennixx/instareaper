@@ -1,0 +1,91 @@
+# InstaReaper .gitignore
+
+# Credentials and sensitive files
+config/credentials.json
+data/instagram_session.json
+
+# Database files
+data/db.sqlite
+*.db
+
+# Log files
+data/logs/
+*.log
+
+# Video and media files
+data/videos/
+data/thumbnails/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build artifacts
+*.spec
+version_info.txt
+*.exe
+*.bat
+*.iss
+*.nsi
+
+# Application data
+config/
+data/
+logs/
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp 
