@@ -113,3 +113,17 @@ class DatabaseHandler:
             )
             conn.commit()
             return conn.total_changes > 0
+
+    def get_posts_today(self):
+        today = datetime.now().date().isoformat()
+        with closing(self._connect()) as conn:
+            row = conn.execute(
+                """
+                SELECT COUNT(*) AS count
+                FROM videos
+                WHERE posted_to_instagram = 1
+                  AND substr(instagram_posted_at, 1, 10) = ?
+                """,
+                (today,),
+            ).fetchone()
+            return int(row["count"])

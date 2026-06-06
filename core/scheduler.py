@@ -74,6 +74,7 @@ class PostScheduler:
             # Remove existing handlers to avoid duplicates
             for handler in self.logger.handlers[:]:
                 self.logger.removeHandler(handler)
+                handler.close()
             
             # Create file handler
             log_file = os.path.join(log_dir, 'scheduler.log')
@@ -232,10 +233,7 @@ class PostScheduler:
     def get_posts_today(self) -> int:
         """Get number of posts made today"""
         try:
-            today = datetime.now().date()
-            # This would need to be implemented in the database
-            # For now, return 0 as a placeholder
-            return 0
+            return self.database_handler.get_posts_today()
         except Exception as e:
             self.logger.error(f"Error getting today's post count: {e}")
             return 0
@@ -374,6 +372,9 @@ class PostScheduler:
                 video_data['posted_to_instagram'] = True
                 video_data['instagram_post_id'] = result['post_id']
                 video_data['instagram_posted_at'] = datetime.now().isoformat()
+                filename = video_data.get('filename')
+                if filename:
+                    self.database_handler.mark_posted(filename, result['post_id'])
                 
                 self.logger.info(f"Successfully posted video: {video_title} (ID: {result['post_id']})")
                 

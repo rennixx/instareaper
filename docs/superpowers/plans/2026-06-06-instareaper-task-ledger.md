@@ -70,15 +70,16 @@ Use this ledger as the authoritative run-state file for the hourly finisher auto
 ## Task IR-005
 
 - Title: Finish scheduler posting persistence
-- Status: pending
+- Status: completed
 - Dependencies: IR-001, IR-002, IR-003
 - Verification:
   - `python -m unittest tests.test_scheduler_state -v`
   - `python -m py_compile core/scheduler.py data/database.py`
 - Expected Commit: `feat: finish scheduler posting persistence`
 - Notes:
-  - Implement real daily post counting
-  - Persist successful scheduler posts through the database handler
+  - Added `tests/test_scheduler_state.py` to cover database daily counts, scheduler count delegation, and persisted scheduler post success
+  - Implemented `DatabaseHandler.get_posts_today()` and wired `PostScheduler.get_posts_today()` to use the database count
+  - Persisted successful scheduler uploads with `DatabaseHandler.mark_posted()` and verified with scheduler, compile, and database regression checks
 
 ## Task IR-006
 
