@@ -28,15 +28,16 @@ Use this ledger as the authoritative run-state file for the hourly finisher auto
 ## Task IR-002
 
 - Title: Restore source boot and module imports
-- Status: pending
+- Status: completed
 - Dependencies: IR-001
 - Verification:
   - `python -m unittest tests.test_boot_and_imports -v`
   - `python -m py_compile run.py gui/main_window.py scraper/reddit_scraper.py core/scheduler.py`
 - Expected Commit: `fix: restore source boot and module imports`
 - Notes:
-  - Make `run.py` create required runtime directories
-  - Align `config.yaml` database path with the reconstructed persistence layer
+  - Added `tests/test_boot_and_imports.py` to verify direct imports and `run.main`
+  - Updated `run.py` and `config.yaml` to create the runtime directories and point at `data/db.sqlite`
+  - Removed the import-time Unicode console print from `uploader/instagram_poster.py` so module imports succeed on this Windows environment
 
 ## Task IR-003
 

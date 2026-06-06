@@ -15,6 +15,8 @@ from typing import Dict, Tuple, Optional
 import cv2
 import random
 
+LOGGER = logging.getLogger(__name__)
+
 try:
     from .instagram_web_auth import InstagramWebAuth
 except ImportError:
@@ -31,10 +33,8 @@ try:
         ClientError
     )
     INSTAGRAPI_AVAILABLE = True
-    print("✅ instagrapi loaded successfully")
 except ImportError as e:
-    print(f"❌ Warning: instagrapi not available: {e}")
-    print("Install with: pip install instagrapi")
+    LOGGER.warning("instagrapi not available: %s", e)
     Client = None
     INSTAGRAPI_AVAILABLE = False
 

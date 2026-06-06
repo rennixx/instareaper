@@ -30,7 +30,7 @@ video:
   
 # Database Settings
 database:
-  path: "data/videos.db"
+  path: "data/db.sqlite"
   backup_interval: 24  # hours
 
 # File Paths
@@ -38,7 +38,7 @@ paths:
   videos: "data/videos"
   thumbnails: "data/thumbnails"
   logs: "data/logs"
-  database: "data/videos.db"
+  database: "data/db.sqlite"
 
 # Instagram Settings (basic - detailed config in config/credentials.json)
 instagram:
