@@ -16,14 +16,14 @@ Use this ledger as the authoritative run-state file for the hourly finisher auto
 ## Task IR-001
 
 - Title: Restore database handler persistence layer
-- Status: pending
+- Status: completed
 - Dependencies: none
 - Verification:
   - `python -m unittest tests.test_database_handler -v`
 - Expected Commit: `feat: restore database handler persistence layer`
 - Notes:
-  - Recreate `data/database.py` and `data/__init__.py`
-  - Provide schema, duplicate detection, fetch methods, and posting-state updates
+  - Recreated `data/database.py` and `data/__init__.py` with SQLite-backed video persistence
+  - Verified with `python -m unittest tests.test_database_handler -v` and `python -m py_compile data/database.py tests/test_database_handler.py`
 
 ## Task IR-002
 
