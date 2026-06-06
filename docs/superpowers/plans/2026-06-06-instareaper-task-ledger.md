@@ -42,15 +42,16 @@ Use this ledger as the authoritative run-state file for the hourly finisher auto
 ## Task IR-003
 
 - Title: Persist normalized scraped metadata and thumbnails
-- Status: pending
+- Status: completed
 - Dependencies: IR-001, IR-002
 - Verification:
   - `python -m unittest tests.test_database_handler -v`
   - `python -m py_compile scraper/reddit_scraper.py processor/validate.py`
 - Expected Commit: `feat: persist normalized video metadata and thumbnails`
 - Notes:
-  - Add `thumbnail_path`, `created_at`, and default posting fields to scraper output
-  - Ensure thumbnail generation fails safely on invalid frame counts
+  - Added regression coverage for normalized scraper metadata and zero-frame thumbnail generation
+  - Updated the scraper to emit `thumbnail_path`, `created_at`, and default posting state using one shared timestamp
+  - Guarded thumbnail generation against invalid frame counts before frame extraction
 
 ## Task IR-004
 

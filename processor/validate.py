@@ -119,6 +119,10 @@ class VideoProcessor:
             
             # Get frame from middle of video
             total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            if total_frames <= 0:
+                self.logger.error(f"Cannot generate thumbnail, invalid frame count: {video_path}")
+                cap.release()
+                return None
             middle_frame = total_frames // 2
             cap.set(cv2.CAP_PROP_POS_FRAMES, middle_frame)
             

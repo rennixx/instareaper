@@ -241,6 +241,9 @@ class RedditScraper:
                 if os.path.exists(filepath):
                     os.remove(filepath)
                 return None
+
+            created_at = datetime.now().isoformat()
+            thumbnail_path = self.video_processor.generate_thumbnail(filepath) or ""
             
             # Return video metadata in the requested format
             video_metadata = {
@@ -249,9 +252,12 @@ class RedditScraper:
                 'duration': round(duration, 2),
                 'filename': filename,
                 'filepath': filepath,
+                'thumbnail_path': thumbnail_path,
                 'subreddit': post['subreddit'],
                 'has_audio': video_info.get('has_audio', False),
-                'timestamp': datetime.now().isoformat()
+                'timestamp': created_at,
+                'created_at': created_at,
+                'posted_to_instagram': False,
             }
             
             self.logger.info(f"Successfully downloaded and validated: {filename} ({duration:.2f}s) - Audio: {video_info.get('has_audio', False)}")
