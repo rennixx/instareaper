@@ -432,7 +432,7 @@ class InstaReaperGUI(QMainWindow):
         
         self.post_button = QPushButton("Post Now")
         self.post_button.clicked.connect(self.post_now)
-        self.post_button.setEnabled(False)  # Will be enabled in future phases
+        self.post_button.setEnabled(False)
         left_panel.addWidget(self.post_button)
         
         self.folder_button = QPushButton("Open Folder")
@@ -664,6 +664,7 @@ class InstaReaperGUI(QMainWindow):
                     duration = video.get('duration', 0)
                     can_post = duration > 0 and duration <= 60.0 and not video.get('posted_to_instagram', False)
                     self.instagram_button.setEnabled(can_post)
+                    self.post_button.setEnabled(can_post)
                     
                     if not can_post:
                         if duration > 60.0:
@@ -673,19 +674,23 @@ class InstaReaperGUI(QMainWindow):
                         else:
                             tooltip = "Video duration unknown - cannot post"
                         self.instagram_button.setToolTip(tooltip)
+                        self.post_button.setToolTip(tooltip)
                     else:
                         self.instagram_button.setToolTip("Post this video to Instagram")
+                        self.post_button.setToolTip("Post this video to Instagram")
                     
                     self.log_message(f"Loaded video: {os.path.basename(video_path)}")
                 else:
                     self.log_message(f"Video file not found: {video_path}")
                     self.logger.warning(f"Video file not found: {video_path}")
                     self.instagram_button.setEnabled(False)
+                    self.post_button.setEnabled(False)
                     
             else:
                 # No video selected
                 self.selected_video_index = -1
                 self.instagram_button.setEnabled(False)
+                self.post_button.setEnabled(False)
                 self.play_button.setEnabled(False)
                 self.stop_button.setEnabled(False)
                     
@@ -693,6 +698,7 @@ class InstaReaperGUI(QMainWindow):
             self.logger.error(f"Error handling video selection: {e}")
             self.log_message(f"Error selecting video: {str(e)}")
             self.instagram_button.setEnabled(False)
+            self.post_button.setEnabled(False)
     
     def toggle_playback(self):
         """Toggle video playback"""
@@ -768,6 +774,8 @@ class InstaReaperGUI(QMainWindow):
             # Show progress and disable button
             self.instagram_button.setEnabled(False)
             self.instagram_button.setText("📤 Posting...")
+            self.post_button.setEnabled(False)
+            self.post_button.setText("Posting...")
             self.log_message(f"Posting to Instagram: {os.path.basename(video_path)}")
             
             # Attempt to post
@@ -809,6 +817,7 @@ class InstaReaperGUI(QMainWindow):
         finally:
             # Re-enable button and reset text
             self.instagram_button.setText("📸 Post to Instagram")
+            self.post_button.setText("Post Now")
             # Re-check if button should be enabled
             self.on_video_selected()
     
@@ -851,10 +860,16 @@ class InstaReaperGUI(QMainWindow):
     def update_video_instagram_status(self, video_data, post_id, posted_status):
         """Update video's Instagram posting status in database"""
         try:
-            # Update the video record with Instagram status
+            filename = video_data.get('filename')
+            if not filename:
+                filepath = video_data.get('filepath', '')
+                filename = os.path.basename(filepath) if filepath else ''
+
+            if posted_status and filename:
+                self.db_handler.mark_posted(filename, post_id)
+
             video_id = video_data.get('id')
-            if video_id:
-                # Add Instagram metadata to video record
+            if video_id and posted_status:
                 instagram_data = {
                     'posted_to_instagram': posted_status,
                     'instagram_post_id': post_id if posted_status else None,
@@ -1100,8 +1115,7 @@ class InstaReaperGUI(QMainWindow):
             self.video_count_label.setText("Videos: Error")
             
     def post_now(self):
-        QMessageBox.information(self, "Feature Coming Soon", 
-                              "Instagram posting functionality will be added in the next phase!")
+        self.post_to_instagram()
     
     def setup_web_authentication(self):
         """Setup web-based Instagram authentication"""

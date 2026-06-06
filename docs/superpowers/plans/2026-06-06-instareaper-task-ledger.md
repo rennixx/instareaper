@@ -56,15 +56,16 @@ Use this ledger as the authoritative run-state file for the hourly finisher auto
 ## Task IR-004
 
 - Title: Persist GUI posting state and remove dead post action
-- Status: pending
+- Status: completed
 - Dependencies: IR-001, IR-002
 - Verification:
   - `python -m unittest tests.test_gui_state_sync -v`
   - `python -m py_compile gui/main_window.py`
 - Expected Commit: `fix: persist gui posting state and remove dead post action`
 - Notes:
-  - Replace the left-panel placeholder action with the real post flow
-  - Persist successful posting state through `DatabaseHandler`
+  - Added `tests/test_gui_state_sync.py` to cover the left-panel post button, selection-state enablement, and persistence updates
+  - Wired the left-panel `Post Now` button into the real Instagram post flow and kept it synchronized with postability state
+  - Persisted successful GUI posts through `DatabaseHandler.mark_posted` and verified with GUI, import, and database regression checks
 
 ## Task IR-005
 
