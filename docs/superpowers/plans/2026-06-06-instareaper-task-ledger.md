@@ -97,11 +97,12 @@ Use this ledger as the authoritative run-state file for the hourly finisher auto
 ## Task IR-007
 
 - Title: Reconcile docs with recovered source state
-- Status: pending
+- Status: completed
 - Dependencies: IR-001, IR-002, IR-003, IR-004, IR-005, IR-006
 - Verification:
   - `python -m py_compile run.py gui/main_window.py scraper/reddit_scraper.py core/scheduler.py data/database.py`
 - Expected Commit: `docs: reconcile project docs with recovered source state`
 - Notes:
-  - Update README, build summary, Instagram poster docs, and scheduler docs
-  - Remove claims that contradict the checked-in source behavior
+  - Added `tests/test_documentation_consistency.py` to lock the README, build summary, Instagram poster docs, and scheduler docs to the current checked-in source behavior
+  - Rewrote the four docs to describe `python run.py`, `data/db.sqlite`, the real GUI posting actions, the current authentication flow, and the checked-in scheduler regression test path
+  - Verified with `python -m unittest tests.test_documentation_consistency -v` and the task's `python -m py_compile run.py gui/main_window.py scraper/reddit_scraper.py core/scheduler.py data/database.py` check

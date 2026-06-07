@@ -1,112 +1,72 @@
-# InstaReaper Windows Application - Build Summary
+# InstaReaper Build Workflow Summary
 
-## 🎉 Build Completed Successfully!
+This repository does not check in built binaries. The build scripts package the current source tree, whose desktop entrypoint is `run.py`.
 
-Your InstaReaper application has been successfully built into a Windows executable and installer package.
+## Current build pipeline
 
-## 📁 Output Files
+1. `python build_config.py`
+   - Generates the PyInstaller spec file and Windows version metadata.
+   - The generated spec targets `run.py`.
+2. `python build_executable.py`
+   - Verifies build dependencies.
+   - Cleans previous `build/` and `dist/` directories.
+   - Regenerates the PyInstaller spec and version file.
+   - Runs `python -m PyInstaller --clean <spec>`.
+   - Verifies `dist/InstaReaper.exe`.
+   - Creates `dist/InstaReaper_Portable/`.
+3. `python create_installer.py`
+   - Optional follow-on step for installer packaging after a successful executable build.
 
-### 1. Standalone Executable
-- **File**: `dist/InstaReaper.exe`
-- **Size**: 164.3 MB
-- **Type**: Single executable file
-- **Usage**: Double-click to run directly
+## Build prerequisites
 
-### 2. Portable Package
-- **Location**: `dist/InstaReaper_Portable/`
-- **Contents**: 
-  - InstaReaper.exe
-  - assets/ (icons, images)
-  - README.md
-  - Pre-configured directories
-- **Usage**: Copy entire folder to any location and run
+The build helper checks for these packages in addition to the application requirements:
 
-### 3. Installer
-- **File**: `dist/installer/InstaReaper_Install.bat`
-- **Type**: Batch file installer
-- **Usage**: Right-click → "Run as administrator" to install
+- `pyinstaller`
+- `pillow`
+- `PyQt5`
+- `instagrapi`
+- `selenium`
+- `webdriver-manager`
+- `opencv-python`
+- `yt-dlp`
 
-## 🚀 Distribution Options
+Typical setup:
 
-### Option 1: Simple Distribution
-Share just the `InstaReaper.exe` file. Users can run it directly.
+```bash
+pip install -r requirements.txt
+pip install pyinstaller pillow PyQt5 instagrapi selenium webdriver-manager opencv-python yt-dlp
+```
 
-### Option 2: Portable Distribution
-Share the entire `InstaReaper_Portable` folder as a ZIP file.
+## Expected outputs after a successful build
 
-### Option 3: Installer Distribution
-Share the `InstaReaper_Install.bat` for automatic installation.
+`build_executable.py` is expected to create:
 
-## 📋 User Instructions
+- `dist/InstaReaper.exe`
+- `dist/InstaReaper_Portable/`
+- a copied `README.md`
+- `assets/`
+- empty `data/videos` and `data/logs` directories inside the portable package
 
-### First Time Setup
-1. **Run the application** (any of the above methods)
-2. **Instagram Authentication**: Click "🌐 Setup Instagram Login"
-3. **Browser Login**: Complete Instagram login in the opened browser
-4. **Start Using**: Download videos and post to Instagram!
+The application itself creates `data/thumbnails` and other runtime files on first launch.
 
-### Key Features
-- ✅ **No Re-login Required**: Session persists between runs
-- ✅ **Smart Rate Limiting**: Prevents Instagram restrictions
-- ✅ **Audio Support**: Downloads Reddit videos with sound
-- ✅ **Modern UI**: Dark theme, easy to use
-- ✅ **Portable**: No installation required (for .exe version)
+## Runtime and authentication notes
 
-## 🔧 Technical Details
+Packaging does not change the checked-in authentication model:
 
-### Application Data Location
-When running as installed application:
-- **Config**: `%APPDATA%\InstaReaper\config\`
-- **Videos**: `%APPDATA%\InstaReaper\data\videos\`
-- **Logs**: `%APPDATA%\InstaReaper\data\logs\`
+- `config/credentials.json` is still used for traditional username/password authentication and for GUI Auto Mode validation.
+- `data/instagram_session.json` is still used for persisted Instagram sessions.
+- The GUI still exposes `Setup Instagram Login` for browser-based session setup.
 
-### System Requirements
-- **OS**: Windows 10/11 (64-bit)
-- **RAM**: 4GB minimum, 8GB recommended
-- **Storage**: 500MB free space
-- **Internet**: Required for Reddit/Instagram access
+Both `config/credentials.json` and `data/instagram_session.json` are gitignored local files.
 
-### Security Features
-- ✅ **Session Encryption**: Instagram sessions securely stored
-- ✅ **No Credential Storage**: Uses web authentication
-- ✅ **Local Processing**: All video processing done locally
-- ✅ **Rate Limiting**: Built-in Instagram protection
+## Recommended verification
 
-## 🛡️ Instagram Safety
+Before starting a packaging run, confirm the source tree still imports and compiles cleanly:
 
-The application includes advanced anti-detection measures:
-- **Conservative Limits**: Max 3 posts/day, 30+ min intervals
-- **Human-like Delays**: Random delays between actions
-- **Session Persistence**: Avoids suspicious re-logins
-- **Device Simulation**: Realistic mobile device fingerprinting
+```bash
+python -m unittest tests.test_build_scripts -v
+python -m unittest tests.test_boot_and_imports -v
+python -m py_compile build_config.py build_executable.py run.py
+```
 
-## 📞 Support
-
-### Troubleshooting
-1. **Instagram Restrictions**: Use Instagram manually for 24-48 hours
-2. **Login Issues**: Clear sessions and re-authenticate
-3. **Video Issues**: Ensure videos are under 60 seconds
-
-### Common Issues
-- **"Failed to authenticate"**: Re-run web authentication
-- **"Rate limit"**: Wait for the specified time
-- **"Video too long"**: Use videos under 60 seconds
-
-## 🎯 Next Steps
-
-1. **Test the Application**: Run `dist/InstaReaper.exe`
-2. **Verify Instagram Login**: Complete web authentication
-3. **Test Video Download**: Try scraping a few videos
-4. **Test Upload**: Post one video to Instagram
-5. **Share with Users**: Distribute your preferred package
-
-## 📦 File Sizes
-- **Executable**: 164.3 MB
-- **Portable Package**: ~165 MB
-- **Installer**: <1 MB (downloads components)
-
----
-
-**Congratulations!** 🎉 Your InstaReaper Windows application is ready for distribution!
-
-The application now runs as a standalone Windows program with persistent login sessions, eliminating the need to log in every time you use it. 
+If those checks pass, the build scripts are aligned with the current `run.py` application entrypoint.
