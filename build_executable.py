@@ -7,7 +7,6 @@ import os
 import sys
 import subprocess
 import shutil
-from pathlib import Path
 import build_config
 
 def check_dependencies():
@@ -79,65 +78,11 @@ def create_build_files():
     build_config.create_pyinstaller_spec()
     build_config.create_version_file()
 
-def modify_main_window_for_build():
-    """Modify main window for standalone executable"""
-    print("🔧 Preparing main window for build...")
-    
-    # Read the current main window file
-    with open('gui/main_window.py', 'r', encoding='utf-8') as f:
-        content = f.read()
-    
-    # Create a build-specific version
-    build_content = content.replace(
-        'if __name__ == "__main__":',
-        '''def main():
-    """Main entry point for the application"""
-    import sys
-    import os
-    
-    # Set up application data directory
-    if getattr(sys, 'frozen', False):
-        # Running as compiled executable
-        app_dir = os.path.join(os.environ['APPDATA'], 'InstaReaper')
-        os.makedirs(app_dir, exist_ok=True)
-        os.chdir(app_dir)
-    
-    # Ensure required directories exist
-    os.makedirs('data/videos', exist_ok=True)
-    os.makedirs('data/logs', exist_ok=True)
-    os.makedirs('config', exist_ok=True)
-
-if __name__ == "__main__":
-    main()'''
-    )
-    
-    # Save build version
-    with open('gui/main_window_build.py', 'w', encoding='utf-8') as f:
-        f.write(build_content)
-    
-    print("✅ Created build-specific main window")
-
 def run_pyinstaller():
     """Run PyInstaller to create executable"""
     print("🔨 Building executable with PyInstaller...")
     
-    # Update spec file to use build version
     spec_file = build_config.SPEC_FILE
-    
-    # Read and modify spec file
-    with open(spec_file, 'r') as f:
-        spec_content = f.read()
-    
-    # Replace main window path
-    spec_content = spec_content.replace(
-        "['gui/main_window.py']",
-        "['gui/main_window_build.py']"
-    )
-    
-    with open(spec_file, 'w') as f:
-        f.write(spec_content)
-    
-    # Run PyInstaller
     cmd = [sys.executable, '-m', 'PyInstaller', '--clean', spec_file]
     
     print(f"Running: {' '.join(cmd)}")
@@ -155,9 +100,7 @@ def post_build_cleanup():
     """Clean up after build"""
     print("🧹 Post-build cleanup...")
     
-    # Remove build-specific files
     files_to_remove = [
-        'gui/main_window_build.py',
         'version_info.txt',
         build_config.SPEC_FILE
     ]
@@ -227,9 +170,6 @@ def main():
     
     # Create build files
     create_build_files()
-    
-    # Modify main window for build
-    modify_main_window_for_build()
     
     # Run PyInstaller
     if not run_pyinstaller():

@@ -99,7 +99,7 @@ def create_pyinstaller_spec():
 block_cipher = None
 
 a = Analysis(
-    ['gui/main_window.py'],
+    ['run.py'],
     pathex=[],
     binaries=[],
     datas={DATA_FILES},

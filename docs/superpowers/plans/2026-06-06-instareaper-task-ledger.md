@@ -84,14 +84,15 @@ Use this ledger as the authoritative run-state file for the hourly finisher auto
 ## Task IR-006
 
 - Title: Align build scripts with run entrypoint
-- Status: pending
+- Status: completed
 - Dependencies: IR-002
 - Verification:
   - `python -m py_compile build_config.py build_executable.py run.py`
 - Expected Commit: `fix: align build scripts with run entrypoint`
 - Notes:
-  - Package from `run.py`
-  - Remove assumptions that `gui/main_window.py` is the application script
+  - Added `tests/test_build_scripts.py` to lock the PyInstaller entrypoint to `run.py` and reject build-only main-window rewrites
+  - Updated `build_config.py` to generate the spec against `run.py`
+  - Removed the `gui/main_window_build.py` rewrite path from `build_executable.py` and verified with `python -m unittest tests.test_build_scripts -v` plus the task's `py_compile` check
 
 ## Task IR-007
 
